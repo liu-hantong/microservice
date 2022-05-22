@@ -21,7 +21,7 @@ app.post('/posts/:id/comments', async (req, res) => {
     comments.push({id :commenID, content, status: 'pending'});
     commentsByPostId[req.params.id] = comments;
 
-    await axios.post('http://localhost:4005/events', {
+    await axios.post('http://event-bus-srv:4005/events', {
         type: 'CommentCreated',
         data: {
             id: commenID,
@@ -29,6 +29,9 @@ app.post('/posts/:id/comments', async (req, res) => {
             postId: req.params.id,
             status: 'pending'
         }
+    })
+    .catch(function (error) {
+        console.log(error.message);
     });
 
     res.status(201).send(comments);
@@ -36,6 +39,7 @@ app.post('/posts/:id/comments', async (req, res) => {
 
 app.post('/events', async (req, res) => {
     const { type, data } = req.body;
+    console.log('Received Event', type);
     if (type === 'CommentModerated') {
         const { postId, id, status, content } = data;
         const comments = commentsByPostId[postId];
@@ -44,7 +48,7 @@ app.post('/events', async (req, res) => {
         })
         comment.status = status;
         
-        await axios.post('http://localhost:4005/events', {
+        await axios.post('http://event-bus-srv:4005/events', {
             type: 'CommentUpdated',
             data: {
                 id,
@@ -53,6 +57,9 @@ app.post('/events', async (req, res) => {
                 content
             }
         })
+        .catch(function (error) {
+            console.log(error.message);
+        });    
     }
     res.send({});
 });

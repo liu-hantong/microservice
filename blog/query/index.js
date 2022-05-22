@@ -38,6 +38,7 @@ const handleEvent = (type, data) => {
 
 app.post('/events', (req, res) => {
     const {type, data} = req.body;
+    console.log('Received Event', type);
 
     handleEvent(type, data);
 
@@ -47,7 +48,12 @@ app.post('/events', (req, res) => {
 app.listen(4002, async () => {
     console.log('Listening on 4002');
     
-    const res = await axios.get('http://localhost:4005/events');
+    const res = await axios.get('http://event-bus-srv:4005/events').catch(function (error) {
+        console.log(error.message);
+    })
+    .catch(function (error) {
+        console.log(error.message);
+    });
 
     for (let event of res.data) {
         console.log('process event:', event.type);
