@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import request from 'supertest';
 import { app } from '../../app';
-import moogoose from 'mongoose';
 
 it('returns a 404 if the ticket is not found', async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
