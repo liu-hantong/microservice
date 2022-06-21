@@ -1,9 +1,8 @@
-import { Listener, OrderCancelledEvent, Subjects } from "@lht-ticketing/common";
-import { Message } from "node-nats-streaming";
-import { OrderCreatedListener } from "./order-created-listener";
-import { queueGroupName } from "./queue-group-name";
-import { Ticket } from "../../models/ticket";
-import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
+import { Listener, OrderCancelledEvent, Subjects } from '@lht-ticketing/common';
+import { Message } from 'node-nats-streaming';
+import { queueGroupName } from './queue-group-name';
+import { Ticket } from '../../models/ticket';
+import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
 
 export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
   subject: Subjects.OrderCancelled = Subjects.OrderCancelled;
@@ -16,7 +15,7 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
       throw new Error('Ticket not found');
     }
 
-    ticket.set({ orderId: undefined});
+    ticket.set({ orderId: undefined });
     await ticket.save();
     await new TicketUpdatedPublisher(this.client).publish({
       id: ticket.id,
@@ -26,5 +25,7 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
       title: ticket.title,
       version: ticket.version,
     });
+
+    msg.ack();
   }
 }
